@@ -1,0 +1,63 @@
+- hosts: all
+  become: true
+  vars:
+    motd: "Ansible Managed node by Dave"
+  vars_prompt:
+    - name: dabberino
+      prompt: "Enter username"
+      private: no
+
+    - name: uid
+      prompt: "Enter the UID"
+      private: no
+
+  tasks:
+    - name: Create a username
+      ansible.builtin.user:
+        name: "{{ dabberino }}"
+        comment: NewUser
+        uid: "{{ uid }}"
+        createhome: yes
+        home: "/home/{{ dabberino }}"
+        shell: /bin/bash
+
+    - name: install python3 in Ubuntu
+      apt:
+        name: python3
+        state: latest
+      when: ansible_distribution == "Ubuntu"
+
+    - name: install python3 in CentOS
+      yum:
+        name: python3
+        state: latest
+      when: ansible_distribution == "CentOS"
+
+    - name: install pip3 in Ubuntu
+      apt:
+        name: python3-pip
+        state: latest
+      when: ansible_distribution == "Ubuntu"
+
+    - name: install pip3 in CentOS
+      yum:
+        name: python3-pip
+        state: latest
+      when: ansible_distribution == "CentOS"
+
+    - name: install java in Ubuntu
+      apt:
+        name: default-jre
+        state: latest
+      when: ansible_distribution == "Ubuntu"
+
+    - name: install java in CentOS
+      yum:
+        name: java-11-openjdk-devel
+        state: latest
+      when: ansible_distribution == "CentOS"
+
+    - name: Banner MOTD
+      ansible.builtin.debug:
+        msg: "{{ motd }}"
+
